@@ -2,5 +2,13 @@
     {
         "caption": "Tailwind-order: Order classes",
         "command": "tailwind_order"
+    },
+    {
+        "caption": "Preferences: Tailwind-order Settings – User",
+        "command": "open_file",
+        "args": {
+            "file": "${packages}/User/tailwind-order.sublime-settings",
+            "platform": "Windows"
+        }
     }
 ]
