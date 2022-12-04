@@ -13,6 +13,30 @@ class TailwindOrderCommand(sublime_plugin.TextCommand):
             filter_by[item] = []
         return filter_by
 
+    # Add function to make it run only if match scopes
+    def checkScope1(self):
+        scopes = settings.get('scopes')
+        cursor = self.view.sel()[0].begin()
+        curr_scope = view.scope_name(cursor)
+
+        return (curr_scope in scopes)
+
+    def checkScope(self):
+        # Match only in scopes
+        scopes = settings.get('scopes')
+        match = next(filter(lambda scope: self.view.find_by_selector(scope), scopes), None)
+        # matchString = next(filter(lambda scope: self.view.match_selector(locations[0], scope), scopes), None)
+        return match
+
+    def getRegexClassNames(self):
+        classNames = settings.get('classNames')
+        regex = "(?:"
+        for item in classNames:
+            regex += '(?<=' + item + '=")|'
+        regex += '(?<=ClassName="))(.*?)(?=")'
+        # '(?:(?<=class=")|(?<=className="))(.*?)(?=")'
+        return regex
+
     def run(self, edit):
         file = sublime.load_resource(sublime.find_resources('data.json')[0])
         file = json.loads(file)
