@@ -4,5 +4,7 @@
         "spacing", "sizing", "typography", "background",
         "border", "effect", "table", "transition",
         "transform", "interactivity", "svg", "accessibility"
-    ]
+    ],
+    "scopes": ["source.tsx string.quoted"],
+    "classNames": ["className", "class"]
 }
