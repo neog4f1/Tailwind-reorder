@@ -1,27 +1,7 @@
 [
     {
-        "caption": "Preferences: Tailwind-order Key Bindings – Default",
-        "command": "open_file",
-        "args": {
-            "file": "${packages}/Tailwind-order/Default (Windows).sublime-keymap",
-            "platform": "Windows"
-        }
-    },
-    {
-        "caption": "Preferences: Tailwind-order Key Bindings – Default",
-        "command": "open_file",
-        "args": {
-            "file": "${packages}/Tailwind-order/Default (OSX).sublime-keymap",
-            "platform": "OSX"
-        }
-    },
-    {
-        "caption": "Preferences: Tailwind-order Key Bindings – Default",
-        "command": "open_file",
-        "args": {
-            "file": "${packages}/Tailwind-order/Default (Linux).sublime-keymap",
-            "platform": "Linux"
-        }
+        "caption": "Tailwind-order: Order classes",
+        "command": "tailwind_order",
     },
     {
         "caption": "Preferences: Tailwind-order Key Bindings – User",
