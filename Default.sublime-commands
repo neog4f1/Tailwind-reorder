@@ -1,14 +1,24 @@
 [
     {
-        "caption": "Tailwind: Order classes",
+        "caption": "Tailwind: Reorder classes",
         "command": "tailwind_order"
     },
+//     {
+//         "caption": "Preferences: Tailwind Reorder Settings",
+//         "command": "open_file",
+//         "args": {
+//             "file": "${packages}/User/tailwind-order.sublime-settings",
+//             "platform": "Windows"
+//         }
+//     },
     {
-        "caption": "Preferences: Tailwind Order Settings – User",
-        "command": "open_file",
-        "args": {
-            "file": "${packages}/User/tailwind-order.sublime-settings",
-            "platform": "Windows"
-        }
+        "caption": "Preferences: Tailwind Reorder Settings",
+        "command": "edit_settings",
+        "args": { "base_file": "${packages}/Tailwind-order/tailwind-order.sublime-settings" }
+    },
+    {
+        "caption": "Preferences: Tailwind Reorder Key Bindings",
+        "command": "edit_settings",
+        "args": { "base_file": "${packages}/Tailwind-order/Default (${platform}).sublime-keymap" }
     }
 ]
