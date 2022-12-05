@@ -4,10 +4,9 @@ import sublime_plugin
 import re
 
 class Settings:
-  settings = sublime.load_settings('tailwind_reorder.sublime-settings')
-
   @staticmethod
   def init():
+    Settings.settings = sublime.load_settings('tailwind_reorder.sublime-settings')
     Settings.settings.add_on_change('tailwind_reorder' + '-reload', Settings.setup)
     Settings.setup()
 
