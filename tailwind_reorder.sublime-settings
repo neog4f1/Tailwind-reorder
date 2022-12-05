@@ -20,6 +20,16 @@
 			"sub_kind":"padding"
 		},
 		{
+			"name":"pr-",
+			"kind":"spacing",
+			"sub_kind":"padding"
+		},
+		{
+			"name":"pl-",
+			"kind":"spacing",
+			"sub_kind":"padding"
+		},
+		{
 			"name":"py-",
 			"kind":"spacing",
 			"sub_kind":"padding"
