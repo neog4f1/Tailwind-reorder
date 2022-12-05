@@ -13,14 +13,14 @@ class TailwindOrderCommand(sublime_plugin.TextCommand):
         regex += '(?<=class="))(.*?)(?=")'
         # '(?:(?<=class=")|(?<=className="))(.*?)(?=")'
         return regex
-    
+
     def checkScope1(self):
         scopes = self.settings.get('scopes')
         cursor = self.view.sel()[0].begin()
         curr_scope = view.scope_name(cursor)
 
         return (curr_scope in scopes)
-    
+
     def checkScope(self):
         scopes = self.settings.get('scopes')
         # matchHTMLString = view.match_selector(locations[0], "text.html string.quoted")
@@ -41,30 +41,35 @@ class TailwindOrderCommand(sublime_plugin.TextCommand):
         regex = self.getRegexClassNames()
         list = self.settings.get('filter_by')
         file = self.settings.get('data')
-        
+
         # file = sublime.load_resource(sublime.find_resources('data.json')[0])
         # file = json.loads(file)
-        # dif = 0
+        dif = 0
         classes = self.view.find_all(regex)
         # classes = self.view.find_all('(?<=class=")(.*?)(?=")')
-        
+
         for item in classes:
-            # item.a += dif
-            # item.b += dif
+            if not dif == 0:
+                item.a += dif
+                item.b += dif
             # region = item
-            temp_classes = self.view.substr(item).strip()
-            if not temp_classes:
+            originStr = self.view.substr(item)
+            temp_str = originStr.strip()
+            if not temp_str:
                 continue
-            temp_classes = re.sub(' +', ' ', temp_classes)
+            temp_classes = re.sub(' +', ' ', temp_str)
             temp_classes = temp_classes.split(' ')
 
             if len(temp_classes) < 2:
+                if not originStr == temp_str:
+                    self.view.replace(edit, item, temp_str)
+                    dif += len(temp_str) - len(originStr)
                 continue
             filters = self.create_filters(list)
-            
+
             other_classes = temp_classes[:]
             sorted_class = ""
-            
+
             for temp_class in temp_classes:
                 for tw_class in file:
                     if temp_class.startswith(tw_class['name']):
@@ -89,4 +94,5 @@ class TailwindOrderCommand(sublime_plugin.TextCommand):
                     sorted_class = ' '.join(sorted(other_classes))
                 # sorted_class += ' '.join(sorted(other_classes))
             self.view.replace(edit, item, sorted_class)
+            dif += len(sorted_class) - len(originStr)
             # dif += len(sorted_class) - len(str(self.view.substr(item)))
