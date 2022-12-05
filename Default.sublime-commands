@@ -14,11 +14,11 @@
     {
         "caption": "Preferences: Tailwind Reorder Settings",
         "command": "edit_settings",
-        "args": { "base_file": "${packages}/Tailwind-order/tailwind-order.sublime-settings" }
+        "args": { "base_file": "${packages}/Tailwind-reorder/tailwind_reorder.sublime-settings" }
     },
     {
         "caption": "Preferences: Tailwind Reorder Key Bindings",
         "command": "edit_settings",
-        "args": { "base_file": "${packages}/Tailwind-order/Default (${platform}).sublime-keymap" }
+        "args": { "base_file": "${packages}/Tailwind-reorder/Default (${platform}).sublime-keymap" }
     }
 ]
