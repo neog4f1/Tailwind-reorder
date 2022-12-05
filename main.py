@@ -20,7 +20,6 @@ class Settings:
 
 def plugin_loaded():
     Settings.init()
-    print(Settings.scopes)
 
 class TailwindOrderCommand(sublime_plugin.TextCommand):
 
