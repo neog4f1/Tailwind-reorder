@@ -22,15 +22,34 @@ def plugin_loaded():
 
 class TailwindOrderCommand(sublime_plugin.TextCommand):
 
-    def getRegexClassNames(self):
+    # def getRegexClassNames(self):
+        # classNames = Settings.classNames
+        # # classNames = self.settings.get('classNames')
+        # regex = "(?:"
+        # for item in classNames:
+            # regex += '(?<=' + item + '=")|'
+        # regex = regex[:-1] + ')(.*?)(?=")'
+        # # '(?:(?<=class=")|(?<=className="))(.*?)(?=")'
+        # return regex
+
+    def getClassNames(self):
         classNames = Settings.classNames
-        # classNames = self.settings.get('classNames')
-        regex = "(?:"
-        for item in classNames:
-            regex += '(?<=' + item + '=")|'
-        regex += '(?<=class="))(.*?)(?=")'
-        # '(?:(?<=class=")|(?<=className="))(.*?)(?=")'
-        return regex
+        regex = r'('
+        for i in classNames:
+            regex += i + '|'
+        regex = regex[:-1] + ')\s*=[^\"\']*[\"|\'](?P<str>[^\"\']*)[\"|\']'
+        classes = []
+        target_string = self.view.substr(sublime.Region(0, self.view.size()))
+        pattern = re.compile(regex)
+        # pattern = re.compile("(className|class|ClassName)\s*=[^\"\']*[\"|\'](?P<str>[^\"\']*)[\"|\']")
+        n = pattern.finditer(target_string)
+        # Extract matching values of all groups
+        for match in n:
+            # extract words
+            classes.append({ 'data': match.group('str'), 'region': sublime.Region(match.start('str'), match.end('str')) })
+            # classes.append(match.group('str'))
+
+        return classes
 
     # def checkScope1(self):
     #     # scopes = self.settings.get('scopes')
@@ -51,13 +70,18 @@ class TailwindOrderCommand(sublime_plugin.TextCommand):
         for item in list:
             filter_by[item] = []
         return filter_by
+ 
+    def replace(self, edit, region, str, originStr, dif):
+        self.view.replace(edit, region, str)
+        dif += len(str) - len(originStr)
+        return dif
 
     def run(self, edit):
         # if not hasattr(self, "settings"):
         #     self.settings = sublime.load_settings("tailwind-order.sublime-settings")
         if not self.checkScope():
             return 0
-        regex = self.getRegexClassNames()
+
         filter_by = Settings.filter_by
         # filter_by = self.settings.get('filter_by')
         file = Settings.data
@@ -66,28 +90,39 @@ class TailwindOrderCommand(sublime_plugin.TextCommand):
         # file = sublime.load_resource(sublime.find_resources('data.json')[0])
         # file = json.loads(file)
         dif = 0
-        classes = self.view.find_all(regex)
+
+        classes = self.getClassNames()
+        # regex = self.getRegexClassNames()
+        # classes = self.view.find_all(regex)
         # classes = self.view.find_all('(?<=class=")(.*?)(?=")')
+        
+        if len(classes) < 1:
+            return 0
 
         for item in classes:
+        # for item in classes:
             if not dif == 0:
-                item.a += dif
-                item.b += dif
-            # region = item
-            originStr = self.view.substr(item)
+                item['region'].a += dif
+                item['region'].b += dif
+            # dont strip here, need origin string for calculate position
+            originStr = item['data']
+            # originStr = self.view.substr(item)
             temp_str = originStr.strip()
             if not temp_str:
                 continue
+            # remove duplicate space
             temp_classes = re.sub(' +', ' ', temp_str)
             temp_classes = temp_classes.split(' ')
 
             if len(temp_classes) < 2:
                 if not originStr == temp_str:
-                    self.view.replace(edit, item, temp_str)
-                    dif += len(temp_str) - len(originStr)
+                    dif = self.replace(edit, item['region'], temp_str, originStr, dif)
+                    # self.view.replace(edit, item['region'], temp_str)
+                    # dif += len(temp_str) - len(originStr)
                 continue
             filters = self.create_filters(filter_by)
 
+            # clone list
             other_classes = temp_classes[:]
             sorted_class = ""
 
@@ -103,17 +138,17 @@ class TailwindOrderCommand(sublime_plugin.TextCommand):
             # for kind in filters.keys():
                 if not filters[kind]:
                     continue
+                # ' '.join will add empty string when join because classes now arr and sorted return arr
                 filters[kind] = sorted(filters[kind])
                 sorted_class += ' '.join(filters[kind]) + ' '
-                # if filters[kind]:
-                    # sorted_class += ' '
-            if other_classes:
-                # ' '.join will add empty string when join because classes now arr and sorted return arr
-                if sorted_class:
-                    sorted_class = ' '.join(sorted(other_classes)) + ' ' + sorted_class[:-1]
-                else:
-                    sorted_class = ' '.join(sorted(other_classes))
-                # sorted_class += ' '.join(sorted(other_classes))
-            self.view.replace(edit, item, sorted_class)
-            dif += len(sorted_class) - len(originStr)
+            if sorted_class:
+                sorted_class = sorted_class[:-1]
+                if other_classes:
+                    sorted_class = ' '.join(sorted(other_classes)) + ' ' + sorted_class
+            else:
+                sorted_class = ' '.join(sorted(other_classes))
+
+            dif = self.replace(edit, item['region'], sorted_class, originStr, dif)
+            # self.view.replace(edit, item['region'], sorted_class)
+            # dif += len(sorted_class) - len(originStr)
             # dif += len(sorted_class) - len(str(self.view.substr(item)))
